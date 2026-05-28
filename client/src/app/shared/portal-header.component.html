@@ -1,0 +1,168 @@
+<header
+  class="sticky top-0 z-50 overflow-visible border-b border-slate-100 bg-white shadow-sm"
+>
+  <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:py-4">
+    <div class="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
+      <a
+        routerLink="/documents"
+        class="flex shrink-0 items-center rounded-xl py-1 outline-none ring-portal-500/0 transition hover:ring-2 hover:ring-portal-400/25 focus-visible:ring-2 focus-visible:ring-portal-400/40"
+        aria-label="Home — PrimeDocs"
+      >
+        <img
+          src="assets/logo.png"
+          width="320"
+          height="64"
+          alt="PrimeDocs"
+          class="h-12 w-auto max-h-12 max-w-[min(320px,78vw)] object-left object-contain sm:h-16 sm:max-h-16 sm:max-w-[min(380px,55vw)]"
+        />
+
+      </a>
+      <span class="hidden h-12 w-px shrink-0 self-center bg-slate-200 sm:block sm:h-16" aria-hidden="true"></span>
+
+    </div>
+
+    <div class="relative shrink-0" data-profile-menu>
+      <button
+        type="button"
+        data-profile-anchor
+        (click)="toggleProfileMenu($event)"
+        class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white py-1.5 pl-1.5 pr-3 shadow-sm transition hover:border-portal-200 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-portal-400"
+        [attr.aria-expanded]="profileMenuOpen"
+        aria-haspopup="true"
+        aria-controls="profile-menu-panel"
+      >
+        <span
+          class="flex h-10 w-10 items-center justify-center rounded-full bg-sky-400 text-sm font-bold text-white shadow-inner"
+          aria-hidden="true"
+        >
+          {{ profileInitials }}
+        </span>
+        <span class="hidden max-w-[10rem] flex-col text-left text-sm sm:flex">
+          <span class="truncate font-semibold text-slate-900">{{ auth.current?.displayName || 'Account' }}</span>
+          <span class="truncate text-xs text-slate-500">Profile</span>
+        </span>
+        <svg
+          class="h-4 w-4 shrink-0 text-slate-500 transition"
+          [class.rotate-180]="profileMenuOpen"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+
+      <div
+        *ngIf="profileMenuOpen"
+        id="profile-menu-panel"
+        class="absolute right-0 z-[100] mt-2 w-[min(100vw-2rem,18rem)] origin-top-right rounded-2xl border border-slate-200/90 bg-white py-2 shadow-2xl shadow-slate-900/10 ring-1 ring-black/5 motion-safe:animate-slide-up"
+        role="menu"
+      >
+        <div class="border-b border-slate-100 px-4 py-3">
+          <p class="truncate text-sm font-semibold text-slate-900">
+            {{ auth.current?.displayName || 'Employee' }}
+          </p>
+          <p class="mt-0.5 truncate text-xs text-slate-500">{{ auth.current?.email }}</p>
+          <p
+            *ngIf="isMgmt"
+            class="mt-2 inline-flex rounded-full bg-portal-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-portal-800"
+          >
+            Management
+          </p>
+        </div>
+
+        <div *ngIf="isMgmt" class="py-1">
+          <a
+            routerLink="/documents"
+            role="menuitem"
+            (click)="closeProfileMenu()"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-portal-50/80 hover:text-portal-900"
+          >
+            <svg class="h-4 w-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
+              />
+            </svg>
+            Documents
+          </a>
+          <a
+            routerLink="/admin/settings"
+            role="menuitem"
+            (click)="closeProfileMenu()"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-portal-50/80 hover:text-portal-900"
+          >
+            <svg class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Settings
+          </a>
+          <a
+            routerLink="/admin/registrations"
+            role="menuitem"
+            (click)="closeProfileMenu()"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-portal-50/80 hover:text-portal-900"
+          >
+            <svg class="h-4 w-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="min-w-0">
+              Approvals
+              <span
+                *ngIf="pendingApprovalsCount !== null"
+                class="ml-1 text-xs font-semibold tabular-nums"
+                [class.text-red-600]="pendingApprovalsCount > 0"
+                [class.text-slate-400]="pendingApprovalsCount === 0"
+              >
+                ({{ pendingApprovalsCount }})
+              </span>
+            </span>
+          </a>
+          <a
+            routerLink="/admin/users"
+            role="menuitem"
+            (click)="closeProfileMenu()"
+            class="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-portal-50/80 hover:text-portal-900"
+          >
+            <svg class="h-4 w-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M18 18.72a9.09 9.09 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-7.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
+              />
+            </svg>
+            Users
+          </a>
+        </div>
+
+        <div class="border-t border-slate-100 pt-1">
+          <button
+            type="button"
+            role="menuitem"
+            (click)="logout()"
+            class="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-semibold text-red-700 transition hover:bg-red-50"
+          >
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M18 12H9m9 0l-3-3m3 3l-3 3"
+              />
+            </svg>
+            Sign out
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

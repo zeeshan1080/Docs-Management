@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40" fill="none" role="img" aria-labelledby="title">
+  <title id="title">josephanthony</title>
+  <defs>
+    <linearGradient id="mark" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="40" height="40" rx="10" fill="url(#mark)"/>
+  <path
+    d="M12 26V14l8 5.5L28 14v12"
+    stroke="#fff"
+    stroke-width="2.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <text
+    x="52"
+    y="27"
+    fill="#0f172a"
+    font-family="system-ui, -apple-system, Segoe UI, sans-serif"
+    font-size="18"
+    font-weight="700"
+    letter-spacing="-0.02em"
+  >josephanthony</text>
+</svg>

@@ -1,0 +1,88 @@
+<div class="auth-shell">
+  <div class="auth-shell-bg" aria-hidden="true"></div>
+  <div class="auth-shell-orb" aria-hidden="true"></div>
+  <div class="auth-shell-orb-2" aria-hidden="true"></div>
+
+  <div class="auth-card-narrow">
+    <div class="auth-brand-logo-wrap">
+      <div class="auth-brand-logo-inner">
+        <img
+          src="assets/logo.png"
+          width="220"
+          height="128"
+          alt="josephanthony"
+          class="auth-brand-logo"
+        />
+      </div>
+    </div>
+
+    <div
+      *ngIf="sessionChecking"
+      class="flex flex-col items-center gap-4 py-10 text-center"
+      role="status"
+      aria-live="polite"
+    >
+      <span
+        class="h-10 w-10 animate-spin rounded-full border-2 border-portal-200 border-t-portal-600"
+        aria-hidden="true"
+      ></span>
+      <div>
+        <p class="text-sm font-semibold text-slate-800">Checking your session…</p>
+        <p class="mt-1 text-xs text-slate-500">If you are already signed in, you will be taken to your workspace.</p>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!sessionChecking">
+    <div class="mb-6 text-center">
+      <h1 class="text-2xl font-extrabold tracking-tight text-slate-900">Welcome back</h1>
+      <p class="mt-1 text-sm text-slate-600">Sign in to your document workspace.</p>
+    </div>
+
+    <form class="space-y-5" (ngSubmit)="submit()">
+      <div>
+        <label class="block text-sm font-semibold text-slate-700">
+          Email <span class="text-red-600" aria-hidden="true">*</span>
+        </label>
+        <input
+          class="field-input"
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          required
+          [pattern]="emailPattern"
+          title="Enter a valid email address, e.g. name@company.com"
+          autocomplete="username"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-slate-700">
+          Password <span class="text-red-600" aria-hidden="true">*</span>
+        </label>
+        <input
+          class="field-input"
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+      <p *ngIf="error" class="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</p>
+      <p class="text-right">
+        <a
+          routerLink="/forgot-password"
+          class="text-sm font-semibold text-portal-600 transition hover:text-portal-800"
+          >Forgot password?</a>
+      </p>
+      <button type="submit" [disabled]="loading" class="btn-primary w-full py-3 text-base">
+        {{ loading ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+    <p class="mt-8 text-center text-sm text-slate-600">
+      New employee?
+      <a routerLink="/register" class="font-semibold text-portal-600 transition hover:text-portal-800"
+        >Create an account</a>
+    </p>
+    </ng-container>
+  </div>
+</div>

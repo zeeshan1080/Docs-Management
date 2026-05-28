@@ -1,0 +1,1427 @@
+<div class="relative flex min-h-screen flex-col">
+  <div
+    class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_85%_55%_at_50%_-18%,rgba(130,195,236,0.22),transparent_55%)]"
+    aria-hidden="true"
+  ></div>
+
+  <app-portal-header></app-portal-header>
+
+  <div
+    *ngIf="auth.isPending() && !isMgmt"
+    class="mx-auto max-w-7xl px-4 pt-4 w-full"
+  >
+    <div
+      class="rounded-2xl border border-amber-200/80 bg-gradient-to-r from-amber-50 to-orange-50/90 px-4 py-3.5 text-sm text-amber-950 shadow-sm shadow-amber-100/50"
+    >
+      Your account is <strong>pending Management approval</strong>. You can sign in, but documents stay
+      hidden until your role and location are confirmed.
+    </div>
+  </div>
+
+  <div class="relative z-0 mx-auto w-full max-w-7xl flex-1 px-4 py-6">
+    <main
+      class="min-w-0 w-full overflow-visible rounded-3xl border border-slate-100 bg-white p-6 shadow-portal-float motion-safe:animate-fade-in motion-safe:transition-shadow motion-safe:duration-500 motion-safe:hover:shadow-[0_8px_40px_-12px_rgb(130_195_236/0.22)] sm:p-8"
+    >
+      <div *ngIf="selected; else noFolder">
+        <nav
+          *ngIf="folderBreadcrumb.length"
+          class="mb-3 flex flex-wrap items-center gap-x-1 gap-y-1 rounded-xl border border-slate-200/90 bg-slate-50/95 px-3 py-2 text-sm shadow-sm transition-all duration-300 ease-out motion-safe:hover:border-portal-200/70 motion-safe:hover:bg-white/95 motion-safe:hover:shadow-md motion-safe:hover:shadow-portal-500/5"
+          aria-label="Folder path"
+        >
+          <span
+            class="mr-0.5 inline-flex shrink-0 text-portal-600 transition-transform duration-300 ease-out motion-safe:hover:scale-110"
+            aria-hidden="true"
+          >
+            <lucide-icon name="folder" class="text-portal-600" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+          </span>
+          <ng-container *ngFor="let seg of folderBreadcrumb; let last = last">
+            <button
+              type="button"
+              (click)="select(seg)"
+              class="rounded-md px-1.5 py-0.5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-portal-500 motion-safe:hover:bg-white/90 motion-safe:hover:shadow-sm"
+              [ngClass]="
+                last
+                  ? 'font-semibold text-slate-900 hover:text-portal-800 hover:underline'
+                  : 'text-portal-600 hover:text-portal-800 hover:underline'
+              "
+              [attr.aria-current]="last ? 'page' : null"
+            >
+              {{ seg.name }}
+            </button>
+            <span *ngIf="!last" class="select-none px-0.5 text-slate-300" aria-hidden="true">/</span>
+          </ng-container>
+        </nav>
+        <div class="flex min-w-0 flex-col gap-2 pt-1 pb-1 sm:flex-row sm:items-center sm:gap-2 sm:overflow-x-auto sm:overflow-y-visible">
+            <!-- Add content (primary actions first) -->
+            <div class="flex flex-wrap items-center gap-2 sm:shrink-0 sm:flex-nowrap sm:pe-2">
+              <button
+                *ngIf="(auth.isApproved() || isMgmt) && selected && (isMgmt || folderAllowsUpload)"
+                type="button"
+                (click)="openUploadModal()"
+                class="group inline-flex items-center gap-2 rounded-lg bg-portal-400 px-3.5 py-2 text-sm font-bold text-white shadow-md transition-all duration-200 ease-out hover:bg-portal-500 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-lg motion-safe:hover:shadow-portal-500/35 active:scale-[0.98] active:translate-y-0"
+              >
+                <lucide-icon
+                  name="upload"
+                  class="shrink-0 text-white transition-transform duration-200 group-hover:-translate-y-px group-hover:scale-110"
+                  [size]="16"
+                  [strokeWidth]="1.5"
+                ></lucide-icon>
+                Upload
+              </button>
+              <button
+                *ngIf="(auth.isApproved() || isMgmt) && selected && (isMgmt || folderAllowsUpload)"
+                type="button"
+                (click)="openLinkModal()"
+                class="group inline-flex items-center gap-2 rounded-lg border-2 border-portal-400 bg-white px-3.5 py-2 text-sm font-semibold text-portal-700 shadow-sm transition-all duration-200 ease-out hover:bg-portal-50 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md motion-safe:hover:shadow-portal-500/10 active:scale-[0.98]"
+                title="Add a named shortcut that opens a website in a new tab"
+              >
+                <lucide-icon
+                  name="link-2"
+                  class="shrink-0 text-portal-600 transition-transform duration-200 group-hover:scale-110"
+                  [size]="16"
+                  [strokeWidth]="1.5"
+                ></lucide-icon>
+                Add link
+              </button>
+            </div>
+            <span
+              *ngIf="(auth.isApproved() || isMgmt) && selected && (isMgmt || folderAllowsUpload)"
+              class="mx-1 hidden h-6 w-px shrink-0 self-center bg-slate-200/90 sm:block"
+              aria-hidden="true"
+            ></span>
+            <!-- Browse & inspect -->
+            <div class="flex flex-wrap items-center gap-2 sm:shrink-0 sm:flex-nowrap sm:px-2">
+              <button
+                *ngIf="tree.length"
+                type="button"
+                (click)="openFoldersModal()"
+                [disabled]="treeLoading"
+                class="group inline-flex items-center gap-2 rounded-lg border-2 border-portal-400 bg-white px-3.5 py-2 text-sm font-semibold text-portal-700 shadow-sm transition-all duration-200 ease-out hover:bg-portal-50 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md motion-safe:hover:shadow-portal-500/10 active:scale-[0.98] disabled:opacity-50 disabled:hover:translate-y-0"
+              >
+                <lucide-icon
+                  name="folders"
+                  class="shrink-0 text-portal-600 transition-transform duration-200 ease-out group-hover:scale-110 group-hover:-rotate-3"
+                  [size]="16"
+                  [strokeWidth]="1.5"
+                ></lucide-icon>
+                {{ treeLoading ? 'Loading folders...' : 'Folders' }}
+              </button>
+              <button
+                type="button"
+                (click)="openSelectionDetailsModal()"
+                class="group inline-flex items-center gap-1.5 rounded-lg border-2 border-portal-400 bg-white px-3.5 py-2 text-sm font-semibold text-portal-700 shadow-sm transition-all duration-200 ease-out hover:bg-portal-50 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md motion-safe:hover:shadow-portal-500/10 active:scale-[0.98]"
+                title="View folder or file metadata and shares"
+              >
+                <lucide-icon
+                  name="info"
+                  class="shrink-0 text-portal-600 transition-transform duration-200 group-hover:scale-110"
+                  [size]="16"
+                  [strokeWidth]="1.5"
+                ></lucide-icon>
+                View details
+              </button>
+            </div>
+            <ng-container *ngIf="isMgmt && selected">
+              <span class="mx-1 hidden h-6 w-px shrink-0 self-center bg-slate-200/90 sm:block" aria-hidden="true"></span>
+              <div class="flex flex-wrap items-center gap-2 sm:shrink-0 sm:flex-nowrap sm:ps-2">
+                <button
+                  type="button"
+                  (click)="openFolderShareModal()"
+                  class="group inline-flex items-center gap-2 rounded-lg border-2 border-portal-400 bg-white px-3.5 py-2 text-sm font-semibold text-portal-700 shadow-sm transition-all duration-200 ease-out hover:bg-portal-50 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md motion-safe:hover:shadow-portal-500/10 active:scale-[0.98]"
+                >
+                  <lucide-icon
+                    name="share-2"
+                    class="shrink-0 text-portal-600 transition-transform duration-200 group-hover:scale-110"
+                    [size]="16"
+                    [strokeWidth]="1.5"
+                  ></lucide-icon>
+                  Share folder
+                </button>
+                <button
+                  type="button"
+                  (click)="openRenameFolderModal()"
+                  class="group inline-flex items-center gap-2 rounded-lg border-2 border-portal-400 bg-white px-3.5 py-2 text-sm font-semibold text-portal-700 shadow-sm transition-all duration-200 ease-out hover:bg-portal-50 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md motion-safe:hover:shadow-portal-500/10 active:scale-[0.98]"
+                >
+                  <lucide-icon
+                    name="pencil"
+                    class="shrink-0 text-portal-600 transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-6"
+                    [size]="16"
+                    [strokeWidth]="1.5"
+                  ></lucide-icon>
+                  Rename
+                </button>
+                <button
+                  *ngIf="!selected.isDefault"
+                  type="button"
+                  (click)="deleteFolder()"
+                  class="group inline-flex items-center gap-2 rounded-lg border-2 border-[#E57373] bg-white px-3.5 py-2 text-sm font-semibold text-red-700 shadow-sm transition-all duration-200 ease-out hover:bg-red-50 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md motion-safe:hover:shadow-red-500/15 active:scale-[0.98]"
+                >
+                  <lucide-icon
+                    name="trash-2"
+                    class="shrink-0 text-red-700 transition-transform duration-200 group-hover:scale-110"
+                    [size]="16"
+                    [strokeWidth]="1.5"
+                  ></lucide-icon>
+                  Delete folder
+                </button>
+              </div>
+            </ng-container>
+            <div class="order-2 ml-auto min-w-0 items-center sm:order-none sm:flex">
+              <p class="inline-flex items-center gap-1.5 rounded-full border border-portal-200/70 bg-gradient-to-r from-white to-portal-50/70 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm ring-1 ring-portal-100/60">
+                <lucide-icon
+                  [name]="(isMgmt || folderAllowsUpload) ? 'mouse-pointer-click' : 'eye'"
+                  class="text-portal-600"
+                  [size]="13"
+                  [strokeWidth]="1.8"
+                ></lucide-icon>
+                <span>{{ (isMgmt || folderAllowsUpload) ? 'Drop files to upload, or double-click to open' : 'View-only access: double-click to open' }}</span>
+              </p>
+            </div>
+        </div>
+
+        <div class="mt-6 space-y-3 overflow-visible">
+          <!-- Explorer-style grid -->
+          <div class="min-w-0 space-y-3 overflow-visible">
+            <div
+              class="overflow-visible rounded-2xl border p-4 transition-all duration-300 ease-out sm:p-5"
+              [ngClass]="
+                uploadDragActive
+                  ? 'scale-[1.01] border-portal-400 border-2 bg-gradient-to-br from-portal-50 via-white to-portal-50 shadow-portal-float ring-4 ring-portal-200/40 motion-safe:animate-glow-pulse'
+                  : 'border-slate-200/90 bg-slate-50/80 shadow-sm motion-safe:hover:border-portal-200/55 motion-safe:hover:bg-gradient-to-br motion-safe:hover:from-white motion-safe:hover:to-portal-50/20 motion-safe:hover:shadow-md motion-safe:hover:shadow-portal-500/8'
+              "
+              (dragover)="onUploadDragOver($event)"
+              (dragleave)="onUploadDragLeave($event)"
+              (drop)="onUploadDrop($event)"
+            >
+              <app-error-state
+                *ngIf="documentsState.error"
+                [message]="documentsState.error"
+                [type]="'server'"
+                (retry)="retryDocuments()"
+              ></app-error-state>
+              <app-error-state
+                *ngIf="foldersState.error"
+                [message]="foldersState.error"
+                [type]="'server'"
+                (retry)="retryFolders()"
+              ></app-error-state>
+              <div class="mb-4 grid gap-2 sm:grid-cols-2">
+                <div>
+                  <label class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Search folders</label>
+                  <div class="relative mt-1">
+                    <input
+                      [(ngModel)]="folderSearchTerm"
+                      name="folderSearchTerm"
+                      placeholder="Filter child folders..."
+                      class="field-input-search"
+                    />
+                    <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true">
+                      <lucide-icon name="search" class="text-slate-400" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Search files</label>
+                  <div class="mt-1 flex items-center gap-2">
+                    <div class="relative min-w-0 flex-1">
+                    <input
+                      [(ngModel)]="fileSearchTerm"
+                      (ngModelChange)="onFileSearchChanged()"
+                      name="fileSearchTerm"
+                      placeholder="Find files by name..."
+                      class="field-input-search"
+                      [disabled]="docsLoading"
+                    />
+                    <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true">
+                      <lucide-icon name="search" class="text-slate-400" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+                    </span>
+                    </div>
+                    <button
+                      *ngIf="fileSearchTerm"
+                      type="button"
+                      (click)="clearFileSearch()"
+                      [disabled]="docsLoading"
+                      class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-xs font-semibold text-slate-600 transition-all duration-200 hover:bg-slate-50 motion-safe:hover:-translate-y-px motion-safe:hover:shadow-sm active:scale-[0.98] disabled:opacity-40"
+                    >
+                      <lucide-icon name="x" class="shrink-0 text-slate-600" [size]="14" [strokeWidth]="1.5"></lucide-icon>
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div
+                *ngIf="!docsLoading"
+                class="relative z-0 grid grid-cols-2 gap-3 overflow-visible sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6"
+              >
+                <button
+                  *ngFor="let f of childFolders"
+                  type="button"
+                  (click)="onExplorerFolderOpen(f)"
+                  class="group flex flex-col items-center overflow-visible rounded-2xl border border-slate-200/90 bg-white/95 p-3 pb-4 text-center shadow-sm transition-all duration-300 ease-out motion-safe:hover:-translate-y-1 motion-safe:hover:scale-[1.02] motion-safe:hover:border-portal-300 motion-safe:hover:shadow-glow-sm active:scale-[0.99] active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-portal-400"
+                >
+                  <span
+                    class="mb-2 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-b from-portal-50/95 to-white text-portal-600 shadow-sm ring-1 ring-portal-100/80 transition-all duration-300 ease-out group-hover:from-portal-100/90 group-hover:to-white group-hover:shadow-md group-hover:ring-portal-300/60 motion-safe:group-hover:-rotate-2 motion-safe:group-hover:scale-110"
+                    aria-hidden="true"
+                  >
+                    <lucide-icon
+                      name="folder"
+                      class="text-portal-600 transition-transform duration-300 group-hover:scale-105"
+                      [size]="28"
+                      [strokeWidth]="1.5"
+                    ></lucide-icon>
+                  </span>
+                  <span class="line-clamp-2 w-full text-xs font-semibold text-slate-900">{{ f.name }}</span>
+                  <span class="mt-1 text-[11px] text-slate-500">{{ folderTileCaption(f) }}</span>
+                </button>
+
+                <div
+                  *ngFor="let d of documents"
+                  data-file-row
+                  (click)="onDocTileClick(d, $event)"
+                  (dblclick)="onDocTileDblClick(d)"
+                  class="group relative cursor-default overflow-visible rounded-2xl border bg-white/95 p-3 pb-4 text-center shadow-sm transition-all duration-300 ease-out"
+                  [ngClass]="{
+                    'border-portal-500 shadow-portal-float-sm ring-2 ring-portal-400/90 ring-offset-2 ring-offset-white':
+                      isDocTileSelected(d),
+                    'border-slate-200/90 motion-safe:hover:-translate-y-1 motion-safe:hover:scale-[1.01] motion-safe:hover:border-portal-200 motion-safe:hover:shadow-lg motion-safe:hover:shadow-portal-500/10':
+                      !isDocTileSelected(d),
+                    'z-40': openFileMenuId === d.id
+                  }"
+                >
+                  <div class="absolute right-1 top-1 z-50 overflow-visible" data-overflow-anchor>
+                    <button
+                      type="button"
+                      (click)="toggleFileMenu(d.id, $event)"
+                      class="relative z-50 rounded-lg p-1.5 text-slate-500 transition-all duration-200 hover:bg-slate-100 hover:text-slate-800 motion-safe:hover:scale-110 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-portal-500"
+                      [attr.aria-expanded]="openFileMenuId === d.id"
+                      aria-haspopup="true"
+                      [attr.aria-label]="'Actions for ' + d.originalFileName"
+                    >
+                      <lucide-icon name="ellipsis-vertical" class="text-slate-500" [size]="20" [strokeWidth]="1.5"></lucide-icon>
+                    </button>
+                    <div
+                      *ngIf="openFileMenuId === d.id"
+                      class="absolute right-0 top-full z-[60] mt-1 min-w-[12.5rem] origin-top-right rounded-xl border border-slate-200/95 bg-white py-1.5 text-left shadow-2xl shadow-slate-900/15 ring-1 ring-slate-900/5 motion-safe:animate-slide-up motion-safe:transition-shadow motion-safe:hover:shadow-portal-500/10"
+                      role="menu"
+                      (click)="$event.stopPropagation()"
+                    >
+                      <button
+                        *ngIf="isLinkDoc(d)"
+                        type="button"
+                        role="menuitem"
+                        (click)="openExternalDocumentLink(d)"
+                        class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-all duration-150 hover:bg-portal-50/80 hover:text-portal-900 motion-safe:hover:translate-x-0.5"
+                      >
+                        <lucide-icon name="link-2" class="shrink-0 text-slate-400" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+                        Open link
+                      </button>
+                      <button
+                        *ngIf="supportsGoogleDocViewer(d)"
+                        type="button"
+                        role="menuitem"
+                        (click)="openFilePreview(d)"
+                        class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-all duration-150 hover:bg-portal-50/80 hover:text-portal-900 motion-safe:hover:translate-x-0.5"
+                      >
+                        <lucide-icon name="eye" class="shrink-0 text-slate-400" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+                        View
+                      </button>
+                      <button
+                        *ngIf="!d.isLink"
+                        type="button"
+                        role="menuitem"
+                        (click)="download(d)"
+                        class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-all duration-150 hover:bg-portal-50/80 hover:text-portal-900 motion-safe:hover:translate-x-0.5"
+                      >
+                        <lucide-icon name="download" class="shrink-0 text-slate-400" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+                        Download
+                      </button>
+                      <button
+                        *ngIf="isMgmt"
+                        type="button"
+                        role="menuitem"
+                        (click)="openDocShares(d)"
+                        class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-all duration-150 hover:bg-portal-50/80 hover:text-portal-900 motion-safe:hover:translate-x-0.5"
+                      >
+                        <lucide-icon name="share-2" class="shrink-0 text-slate-400" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+                        Share
+                      </button>
+                      <button
+                        *ngIf="isMgmt"
+                        type="button"
+                        role="menuitem"
+                        (click)="removeDocument(d)"
+                        class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-red-700 transition-all duration-150 hover:bg-red-50 motion-safe:hover:translate-x-0.5"
+                      >
+                        <lucide-icon name="trash-2" class="shrink-0 text-red-500" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+                        Delete file
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="mx-auto mt-2 flex h-16 w-14 flex-col items-stretch justify-end">
+                    <div
+                      class="relative flex flex-1 items-end justify-center rounded-t border border-b-0 border-slate-200 bg-gradient-to-b from-white to-slate-100 px-1 pt-2 shadow-inner transition-all duration-300 ease-out group-hover:border-portal-200/70 group-hover:from-portal-50/40 group-hover:to-white group-hover:shadow-md"
+                    >
+                      <svg
+                        *ngIf="!d.isLink"
+                        class="h-9 w-7 text-slate-200"
+                        viewBox="0 0 24 32"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M4 2h10l6 6v22H4V2z"
+                          fill="#f8fafc"
+                          stroke="#e2e8f0"
+                          stroke-width="1"
+                        />
+                        <path d="M14 2v6h6" stroke="#cbd5e1" stroke-width="1" fill="none" />
+                      </svg>
+                      <lucide-icon
+                        *ngIf="d.isLink"
+                        name="link-2"
+                        class="text-portal-600 transition-transform duration-300 group-hover:scale-110"
+                        [size]="40"
+                        [strokeWidth]="1.5"
+                      ></lucide-icon>
+                      <span
+                        class="absolute bottom-1 right-0.5 min-w-[1.75rem] rounded px-1 py-0.5 text-[9px] font-bold leading-none shadow-sm"
+                        [ngClass]="fileBadgeClass(d)"
+                      >
+                        {{ fileExtension(d) }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p class="mt-3 line-clamp-2 text-xs font-medium leading-tight text-slate-900">
+                    {{ d.originalFileName }}
+                  </p>
+                  <p class="mt-1 text-[11px] text-slate-500">{{ formatExplorerDate(d.createdOn) }}</p>
+                </div>
+              </div>
+              <div
+                *ngIf="docsLoading"
+                class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+              >
+                <div *ngFor="let s of [1,2,3,4,5,6,7,8]" class="rounded-2xl border border-slate-200/90 bg-white/95 p-3 pb-4">
+                  <div class="mx-auto mt-2 h-16 w-14 animate-pulse rounded bg-slate-200"></div>
+                  <div class="mt-3 h-3 w-full animate-pulse rounded bg-slate-200"></div>
+                  <div class="mt-2 h-3 w-2/3 animate-pulse rounded bg-slate-200"></div>
+                </div>
+              </div>
+
+              <app-empty-state
+                *ngIf="!docsLoading && !documentsState.error && !childFolders.length && !documents.length"
+                [title]="'No folders or files found'"
+                [description]="(isMgmt || folderAllowsUpload) ? 'Drop files here or use Upload above.' : 'No folders or files here yet.'"
+              ></app-empty-state>
+              <p *ngIf="docsLoading" class="rounded-xl border border-slate-200 bg-white/90 px-4 py-6 text-center text-sm text-slate-500">
+                Loading files...
+              </p>
+              <div class="mt-4 flex flex-wrap items-center justify-between gap-2" *ngIf="docsTotalCount > 0">
+                <p class="text-xs text-slate-500">
+                  {{ docsTotalCount }} file(s) • Page {{ docsPage }} of {{ docsTotalPages || 1 }}
+                </p>
+                <div class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    (click)="prevDocsPage()"
+                    [disabled]="docsPage <= 1 || docsLoading"
+                    class="group inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:bg-slate-50 motion-safe:hover:-translate-y-px motion-safe:hover:shadow-sm disabled:opacity-40 disabled:hover:translate-y-0"
+                  >
+                    <lucide-icon
+                      name="chevron-left"
+                      class="shrink-0 text-slate-700 transition-transform duration-200 group-hover:-translate-x-0.5"
+                      [size]="14"
+                      [strokeWidth]="1.5"
+                    ></lucide-icon>
+                    Previous
+                  </button>
+                  <button
+                    type="button"
+                    (click)="nextDocsPage()"
+                    [disabled]="docsLoading || (docsTotalPages > 0 && docsPage >= docsTotalPages)"
+                    class="group inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition-all duration-200 hover:bg-slate-50 motion-safe:hover:-translate-y-px motion-safe:hover:shadow-sm disabled:opacity-40 disabled:hover:translate-y-0"
+                  >
+                    Next
+                    <lucide-icon
+                      name="chevron-right"
+                      class="shrink-0 text-slate-700 transition-transform duration-200 group-hover:translate-x-0.5"
+                      [size]="14"
+                      [strokeWidth]="1.5"
+                    ></lucide-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #noFolder>
+        <div
+          class="flex min-h-[50vh] flex-col items-center justify-center px-4 text-center text-slate-500 motion-safe:animate-fade-in"
+        >
+          <div
+            class="mb-4 flex h-16 w-16 cursor-default items-center justify-center rounded-2xl bg-gradient-to-br from-portal-100 to-sky-100 text-portal-600 shadow-inner transition-all duration-300 ease-out motion-safe:animate-floaty motion-safe:hover:scale-105 motion-safe:hover:shadow-glow-sm"
+            aria-hidden="true"
+          >
+            <lucide-icon name="folder" class="text-portal-600" [size]="32" [strokeWidth]="1.5"></lucide-icon>
+          </div>
+          <p class="text-lg font-bold text-slate-800">Select a folder</p>
+          <p class="mt-2 max-w-md text-sm leading-relaxed">
+            Open <strong class="text-portal-700">Folders</strong> to browse folders shared with your role or location, then pick one to view files.
+          </p>
+          <button
+            *ngIf="tree.length"
+            type="button"
+            (click)="openFoldersModal()"
+            [disabled]="treeLoading"
+            class="btn-primary group mt-8 inline-flex items-center gap-2 px-8 py-3 transition-all duration-200 motion-safe:hover:scale-[1.03] motion-safe:hover:shadow-lg motion-safe:hover:shadow-portal-500/30 active:scale-[0.98]"
+          >
+            <lucide-icon
+              name="folders"
+              class="shrink-0 text-white transition-transform duration-200 group-hover:scale-110"
+              [size]="20"
+              [strokeWidth]="1.5"
+            ></lucide-icon>
+            {{ treeLoading ? 'Loading folders...' : 'Open folders' }}
+          </button>
+          <p *ngIf="!tree.length" class="mt-4 text-sm">No folders are available yet.</p>
+        </div>
+      </ng-template>
+    </main>
+  </div>
+
+  <!-- Folders picker + management -->
+  <div
+    *ngIf="foldersModalOpen"
+    class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="folders-modal-title"
+  >
+    <div
+      class="dm-modal-surface max-h-[85vh] w-full max-w-md overflow-y-auto rounded-2xl border border-slate-100 bg-white p-6"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h2 id="folders-modal-title" class="text-sm font-semibold text-slate-800">Folders</h2>
+          <p class="mt-1 text-xs text-slate-500">Shared with your role or location.</p>
+        </div>
+        <button
+          type="button"
+          (click)="closeFoldersModal()"
+          class="dm-modal-close p-1.5"
+          aria-label="Close"
+        >
+          <lucide-icon name="x" [size]="20" [strokeWidth]="1.5"></lucide-icon>
+        </button>
+      </div>
+      <div class="max-h-[45vh] overflow-y-auto pr-1">
+        <div *ngIf="treeLoading" class="space-y-2">
+          <div *ngFor="let s of [1,2,3,4,5]" class="h-8 animate-pulse rounded-lg bg-slate-200"></div>
+        </div>
+        <app-folder-tree
+          *ngIf="!treeLoading"
+          [nodes]="filteredTree"
+          [selectedId]="selected?.id ?? null"
+          (selectFolder)="onFolderPickedFromModal($event)"
+        ></app-folder-tree>
+        <p *ngIf="!tree.length" class="py-4 text-sm text-slate-500">No folders available yet.</p>
+      </div>
+      <div *ngIf="isMgmt" class="mt-6 space-y-3 border-t border-slate-100 pt-4">
+        <h3 class="text-xs font-semibold uppercase text-slate-500">Management</h3>
+        <input
+          [(ngModel)]="newFolderName"
+          name="newFolderModal"
+          placeholder="New folder name"
+          class="field-input border-slate-300 shadow-sm"
+        />
+        <div class="flex flex-wrap items-center justify-end gap-2">
+          <button
+            *ngIf="selected && !selected.isDefault"
+            type="button"
+            (click)="deleteFolder()"
+            class="inline-flex items-center gap-1.5 rounded-lg border border-red-200 px-3 py-2 text-xs font-medium text-red-700 transition-all duration-200 hover:bg-red-50 motion-safe:hover:scale-105 active:scale-95"
+          >
+            <lucide-icon name="trash-2" class="shrink-0 text-red-700" [size]="14" [strokeWidth]="1.5"></lucide-icon>
+            Delete folder
+          </button>
+          <button
+            type="button"
+            (click)="createFolder()"
+            class="group inline-flex items-center gap-1.5 rounded-lg bg-portal-400 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all duration-200 hover:bg-portal-500 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md motion-safe:hover:shadow-portal-500/25 active:scale-[0.98]"
+          >
+            <lucide-icon
+              name="plus"
+              class="shrink-0 text-white transition-transform duration-200 motion-safe:group-hover:rotate-90"
+              [size]="14"
+              [strokeWidth]="1.5"
+            ></lucide-icon>
+            Create {{ selected ? 'inside ' + selected.name : 'at root' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload -->
+  <div
+    *ngIf="uploadModalOpen"
+    class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="upload-modal-title"
+  >
+    <div
+      class="dm-modal-surface w-full max-w-lg rounded-2xl border border-slate-100 bg-white p-6"
+    >
+      <div class="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h2 id="upload-modal-title" class="text-sm font-semibold text-slate-900">Upload files</h2>
+          <p class="mt-1 text-xs text-slate-500">
+            Each file shows a short popup when it finishes (success or error). You can also drag files onto the folder area when this dialog is closed.
+          </p>
+        </div>
+        <button
+          type="button"
+          (click)="closeUploadModal()"
+          class="dm-modal-close p-1.5"
+          aria-label="Close"
+        >
+          <lucide-icon name="x" [size]="20" [strokeWidth]="1.5"></lucide-icon>
+        </button>
+      </div>
+      <p
+        *ngIf="auth.isApproved() && !isMgmt && selected && !folderAllowsUpload"
+        class="mb-3 rounded-md bg-amber-50 px-2 py-1.5 text-xs text-amber-900"
+      >
+        This folder is shared with you as <strong>view only</strong>. Uploads are not allowed here.
+      </p>
+      <input
+        #modalUploadInput
+        type="file"
+        multiple
+        class="hidden"
+        (change)="onFileSelected($event)"
+        [disabled]="!selected || (!isMgmt && !folderAllowsUpload)"
+      />
+      <button
+        type="button"
+        (click)="modalUploadInput.click()"
+        [disabled]="!selected || (!isMgmt && !folderAllowsUpload)"
+        class="group inline-flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-portal-300/80 bg-gradient-to-b from-white to-portal-50/40 py-10 text-sm font-semibold text-portal-700 shadow-inner transition-all duration-300 hover:border-portal-400 hover:bg-portal-50/30 hover:text-portal-900 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md motion-safe:hover:shadow-portal-500/15 disabled:cursor-not-allowed disabled:opacity-50 disabled:motion-safe:hover:translate-y-0 disabled:hover:shadow-inner"
+      >
+        <lucide-icon
+          name="upload"
+          class="shrink-0 text-portal-600 transition-transform duration-300 motion-safe:group-hover:scale-110 motion-safe:group-hover:-translate-y-0.5"
+          [size]="20"
+          [strokeWidth]="1.5"
+        ></lucide-icon>
+        {{ uploadInFlight ? 'Uploading…' : 'Browse files' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Add external link (virtual document) -->
+  <div
+    *ngIf="linkModalOpen"
+    class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="link-modal-title"
+  >
+    <div
+      class="dm-modal-surface w-full max-w-lg rounded-2xl border border-slate-100 bg-white p-6"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h2 id="link-modal-title" class="text-sm font-semibold text-slate-900">Add link</h2>
+          <p class="mt-1 text-xs text-slate-500">
+            Creates a shortcut in this folder with your chosen name. Double-click or use <strong>Open link</strong> to open the URL in a new tab (no file is stored).
+          </p>
+        </div>
+        <button
+          type="button"
+          (click)="closeLinkModal()"
+          class="dm-modal-close p-1.5"
+          aria-label="Close"
+        >
+          <lucide-icon name="x" [size]="20" [strokeWidth]="1.5"></lucide-icon>
+        </button>
+      </div>
+      <form class="grid gap-4" (ngSubmit)="submitAddLink()">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700" for="linkDisplayName">Name</label>
+          <input
+            id="linkDisplayName"
+            name="linkDisplayName"
+            [(ngModel)]="linkDisplayName"
+            class="field-input mt-1"
+            type="text"
+            placeholder="Time Off Request"
+            autocomplete="off"
+            maxlength="500"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-700" for="linkUrl">URL</label>
+          <input
+            id="linkUrl"
+            name="linkUrl"
+            [(ngModel)]="linkUrl"
+            class="field-input mt-1"
+            type="url"
+            placeholder="https://…"
+            autocomplete="off"
+            maxlength="2000"
+          />
+        </div>
+        <p *ngIf="linkError" class="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{{ linkError }}</p>
+        <div class="flex justify-end gap-2">
+          <button type="button" (click)="closeLinkModal()" [disabled]="linkSaving" class="btn-secondary px-4 py-2.5">Cancel</button>
+          <button type="submit" [disabled]="linkSaving" class="btn-primary px-5 py-2.5">
+            {{ linkSaving ? 'Saving…' : 'Add link' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Folder / file details -->
+  <div
+    *ngIf="selectionDetailsModalOpen && selected"
+    class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="selection-details-modal-title"
+    (click)="closeSelectionDetailsModal()"
+  >
+    <div
+      class="dm-modal-surface flex max-h-[min(90vh,40rem)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="shrink-0 border-b border-slate-100 bg-gradient-to-r from-slate-50/90 to-portal-50/20 px-5 py-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-[11px] font-bold uppercase tracking-wide text-portal-600">Details</p>
+            <h2 id="selection-details-modal-title" class="mt-0.5 text-base font-bold text-slate-900">
+              {{ selectionDetailsModalHeading }}
+            </h2>
+            <p class="mt-1 truncate text-xs text-slate-600" [title]="selectedExplorerDoc?.originalFileName || selected.name">
+              {{ selectedExplorerDoc?.originalFileName || selected.name }}
+            </p>
+          </div>
+          <button
+            type="button"
+            (click)="closeSelectionDetailsModal()"
+            class="dm-modal-close shrink-0 p-1.5 hover:bg-white/80"
+            aria-label="Close"
+          >
+            <lucide-icon name="x" [size]="20" [strokeWidth]="1.5"></lucide-icon>
+          </button>
+        </div>
+      </div>
+      <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4 text-sm text-slate-700">
+        <ng-container *ngIf="selectedExplorerDoc as doc; else folderDetailsModalBody">
+          <dl class="grid gap-x-6 gap-y-3 sm:grid-cols-2">
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Type</dt>
+              <dd class="mt-0.5">{{ doc.isLink ? 'Web link' : (doc.contentType || '—') }}</dd>
+            </div>
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Size</dt>
+              <dd class="mt-0.5">{{ formatDocumentSize(doc) }}</dd>
+            </div>
+            <div *ngIf="doc.isLink && doc.externalUrl" class="sm:col-span-2">
+              <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Opens</dt>
+              <dd class="mt-0.5 break-all text-xs">
+                <a
+                  [href]="doc.externalUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-medium text-portal-700 underline decoration-portal-300 underline-offset-2 hover:text-portal-900"
+                  >{{ doc.externalUrl }}</a>
+              </dd>
+            </div>
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Uploaded</dt>
+              <dd class="mt-0.5">{{ formatDetailsDateTime(doc.createdOn) }}</dd>
+            </div>
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Uploaded by</dt>
+              <dd class="mt-0.5">{{ doc.createdByDisplayName || '—' }}</dd>
+            </div>
+          </dl>
+          <div *ngIf="isMgmt" class="mt-5 border-t border-slate-200/80 pt-4">
+            <h3 class="text-xs font-bold uppercase tracking-wide text-slate-500">Shares for this file</h3>
+            <p *ngIf="!documentPanelShares.length" class="mt-1 text-xs text-slate-500">No shares yet. Use the file menu → Share.</p>
+            <ul *ngIf="documentPanelShares.length" class="mt-2 max-h-52 space-y-2 overflow-y-auto pr-1">
+              <li
+                *ngFor="let sh of documentPanelShares"
+                class="rounded-lg border border-slate-100 bg-slate-50/80 px-2.5 py-2 text-xs transition-all duration-200 motion-safe:hover:border-portal-200/80 motion-safe:hover:bg-white motion-safe:hover:shadow-sm"
+              >
+                <span class="font-medium text-slate-900">{{ documentShareTargetLine(sh) }}</span>
+                <span class="mt-0.5 block text-slate-500">
+                  Shared {{ formatDetailsDateTime(sh.createdOn) }}
+                  <span *ngIf="sh.createdByDisplayName"> · by {{ sh.createdByDisplayName }}</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </ng-container>
+        <ng-template #folderDetailsModalBody>
+          <p class="text-xs text-slate-600">
+            Select a file in the grid, then choose <strong>View details</strong> again to see file metadata and shares.
+          </p>
+          <dl class="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-2">
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Created</dt>
+              <dd class="mt-0.5">{{ formatDetailsDateTime(selected.createdOn) }}</dd>
+            </div>
+            <div>
+              <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Created by</dt>
+              <dd class="mt-0.5">{{ selected.createdByDisplayName || '—' }}</dd>
+            </div>
+            <div class="sm:col-span-2">
+              <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Contents</dt>
+              <dd class="mt-0.5">
+                <span *ngIf="folderStatsLoading" class="text-slate-500">Loading stats…</span>
+                <ng-container *ngIf="!folderStatsLoading && folderStats">
+                  <span class="font-medium text-slate-800">{{ folderStats.directChildFolderCount }}</span>
+                  {{ folderStats.directChildFolderCount === 1 ? 'subfolder' : 'subfolders' }},
+                  <span class="font-medium text-slate-800">{{ folderStats.documentCount }}</span>
+                  {{ folderStats.documentCount === 1 ? 'file' : 'files' }}
+                  in this folder
+                  <span class="text-slate-500"> · total size {{ formatBytes(folderStats.totalDocumentSizeBytes) }}</span>
+                </ng-container>
+                <span *ngIf="!folderStatsLoading && !folderStats" class="text-slate-500">Stats unavailable.</span>
+              </dd>
+            </div>
+            <div *ngIf="docsTotalPages > 1" class="sm:col-span-2">
+              <dt class="text-[11px] font-semibold uppercase tracking-wide text-slate-500">This page</dt>
+              <dd class="mt-0.5 text-slate-600">
+                Showing {{ documents.length }} of {{ docsTotalCount }} files (page {{ docsPage }} / {{ docsTotalPages }})
+              </dd>
+            </div>
+          </dl>
+          <div *ngIf="isMgmt" class="mt-5 border-t border-slate-200/80 pt-4">
+            <h3 class="text-xs font-bold uppercase tracking-wide text-slate-500">Folder shares</h3>
+            <p *ngIf="!shares.length" class="mt-1 text-xs text-slate-500">No shares yet. Use Share folder.</p>
+            <ul *ngIf="shares.length" class="mt-2 max-h-52 space-y-2 overflow-y-auto pr-1">
+              <li
+                *ngFor="let sh of shares"
+                class="rounded-lg border border-slate-100 bg-slate-50/80 px-2.5 py-2 text-xs transition-all duration-200 motion-safe:hover:border-portal-200/80 motion-safe:hover:bg-white motion-safe:hover:shadow-sm"
+              >
+                <span class="font-medium text-slate-900">{{ folderShareTargetLine(sh) }}</span>
+                <span class="ml-1.5 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600">
+                  {{ folderShareAccessLabel(sh) }}
+                </span>
+                <span class="mt-0.5 block text-slate-500">
+                  Added {{ formatDetailsDateTime(sh.createdOn) }}
+                  <span *ngIf="sh.createdByDisplayName"> · by {{ sh.createdByDisplayName }}</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+        </ng-template>
+      </div>
+      <div class="flex shrink-0 justify-end border-t border-slate-100 bg-slate-50/50 px-5 py-3">
+        <button
+          type="button"
+          (click)="closeSelectionDetailsModal()"
+          class="group inline-flex items-center gap-2 rounded-lg bg-portal-400 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-portal-500 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md motion-safe:hover:shadow-portal-500/25 active:scale-[0.98]"
+        >
+          <lucide-icon
+            name="x"
+            class="shrink-0 text-white transition-transform duration-200 motion-safe:group-hover:rotate-90"
+            [size]="16"
+            [strokeWidth]="1.5"
+          ></lucide-icon>
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rename folder (management) -->
+  <div
+    *ngIf="renameFolderModalOpen && isMgmt && selected"
+    class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="rename-folder-modal-title"
+  >
+    <div
+      class="dm-modal-surface w-full max-w-md rounded-2xl border border-slate-100 bg-white p-6"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="mb-4 flex items-start justify-between gap-3">
+        <h2 id="rename-folder-modal-title" class="text-sm font-semibold text-slate-900">Rename folder</h2>
+        <button
+          type="button"
+          (click)="closeRenameFolderModal()"
+          class="dm-modal-close p-1.5"
+          aria-label="Close"
+        >
+          <lucide-icon name="x" [size]="20" [strokeWidth]="1.5"></lucide-icon>
+        </button>
+      </div>
+      <label class="mt-3 block text-xs font-medium text-slate-600" for="rename-folder-input">Name</label>
+      <input
+        id="rename-folder-input"
+        [(ngModel)]="renameFolderName"
+        name="renameFolderName"
+        class="field-input border-slate-300"
+        (keydown.enter)="saveRenameFolder()"
+      />
+      <div class="mt-4 flex flex-wrap justify-end gap-2">
+        <button
+          type="button"
+          (click)="closeRenameFolderModal()"
+          class="group inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-sm active:scale-[0.98]"
+        >
+          <lucide-icon
+            name="x"
+            class="shrink-0 text-slate-500 transition-transform duration-200 motion-safe:group-hover:rotate-90"
+            [size]="16"
+            [strokeWidth]="1.5"
+          ></lucide-icon>
+          Cancel
+        </button>
+        <button
+          type="button"
+          (click)="saveRenameFolder()"
+          class="group inline-flex items-center gap-2 rounded-lg bg-portal-400 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-portal-500 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-md motion-safe:hover:shadow-portal-500/25 active:scale-[0.98]"
+        >
+          <lucide-icon
+            name="check"
+            class="shrink-0 text-white transition-transform duration-200 motion-safe:group-hover:scale-110"
+            [size]="16"
+            [strokeWidth]="1.5"
+          ></lucide-icon>
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Folder sharing (management) -->
+  <div
+    *ngIf="folderShareModalOpen && isMgmt && selected"
+    class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="folder-share-modal-title"
+    (click)="closeFolderShareModal()"
+  >
+    <div
+      class="dm-modal-surface flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="shrink-0 border-b border-slate-100/90 bg-gradient-to-r from-slate-50/80 to-portal-50/30 px-6 py-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-portal-600">Folder</p>
+            <h2 id="folder-share-modal-title" class="mt-1 text-base font-extrabold tracking-tight text-slate-900">
+              Sharing
+            </h2>
+            <p class="mt-1 text-xs leading-relaxed text-slate-600">
+              <span class="font-semibold text-slate-800">{{ selected.name }}</span>
+              — applies to this folder and everything inside it.
+            </p>
+          </div>
+          <button
+            type="button"
+            (click)="closeFolderShareModal()"
+            class="dm-modal-close shrink-0 rounded-xl p-2 hover:bg-white/80"
+            aria-label="Close"
+          >
+            <lucide-icon name="x" [size]="20" [strokeWidth]="1.5"></lucide-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+        <div
+          class="rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50/90 to-portal-50/25 px-3 py-2.5 text-xs leading-relaxed text-slate-600 transition-shadow duration-300 motion-safe:hover:shadow-sm"
+        >
+          Choose <strong class="text-slate-800">View only</strong> (browse and download) or
+          <strong class="text-slate-800">Full access</strong> (includes upload for this subtree).
+        </div>
+
+        <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="block text-sm font-semibold text-slate-700" for="folderShareAccessLevelModal">Access</label>
+            <select
+              id="folderShareAccessLevelModal"
+              [(ngModel)]="folderShareAccessLevel"
+              name="folderShareAccessLevelModal"
+              class="field-input mt-1 bg-white"
+            >
+              <option [ngValue]="1">View only</option>
+              <option [ngValue]="2">Full access</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700" for="folderShareTypeModal">Share with</label>
+            <select
+              id="folderShareTypeModal"
+              [(ngModel)]="shareType"
+              (ngModelChange)="onShareTypeChange($event)"
+              name="shareTypeModal"
+              class="field-input mt-1 bg-white"
+            >
+              <option [ngValue]="1">Role</option>
+              <option [ngValue]="2">Location</option>
+              <option [ngValue]="3">User</option>
+            </select>
+          </div>
+
+          <div *ngIf="shareType === 1" class="sm:col-span-2">
+            <ng-container *ngTemplateOutlet="shareRolePicker"></ng-container>
+          </div>
+          <div *ngIf="shareType === 2" class="sm:col-span-2">
+            <ng-container *ngTemplateOutlet="shareLocationPicker"></ng-container>
+          </div>
+          <div *ngIf="shareType === 3" class="sm:col-span-2">
+            <ng-container *ngTemplateOutlet="shareUserPicker"></ng-container>
+          </div>
+
+          <div class="flex justify-end sm:col-span-2">
+            <button type="button" (click)="addShare()" class="btn-primary min-w-[10rem] gap-2 py-2.5 text-sm font-semibold">
+              <lucide-icon name="user-plus" class="shrink-0 text-white" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+              Add share
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <p class="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-500">Who has access</p>
+          <ul class="divide-y divide-slate-100/90 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50/50">
+            <li
+              *ngFor="let s of shares"
+              class="flex items-center justify-between gap-3 px-4 py-3 transition-all duration-200 hover:bg-white/90 motion-safe:hover:translate-x-0.5"
+            >
+              <span class="min-w-0 text-sm text-slate-700">
+                <span
+                  class="mr-2 inline-block rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide"
+                  [ngClass]="
+                    (s.accessLevel ?? 2) === 1
+                      ? 'bg-amber-100 text-amber-900'
+                      : 'bg-emerald-100 text-emerald-900'
+                  "
+                >
+                  {{ (s.accessLevel ?? 2) === 1 ? 'View' : 'Full' }}
+                </span>
+                <span *ngIf="s.shareType === 1"><span class="text-slate-500">Role</span> · {{ s.roleName }}</span>
+                <span *ngIf="s.shareType === 2">
+                  <span class="text-slate-500">Location</span> ·
+                  <ng-container *ngIf="s.locationName; else inactiveLocShare">{{ s.locationName }}</ng-container>
+                  <ng-template #inactiveLocShare><span class="text-slate-400">(inactive)</span></ng-template>
+                </span>
+                <span *ngIf="s.shareType === 3"><span class="text-slate-500">User</span> · {{ s.userEmail || s.userId }}</span>
+              </span>
+              <button
+                type="button"
+                (click)="removeShare(s)"
+                class="inline-flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold text-red-700 transition-all duration-200 hover:bg-red-50 motion-safe:hover:scale-105 active:scale-95"
+              >
+                <lucide-icon name="trash-2" class="shrink-0 text-red-700" [size]="14" [strokeWidth]="1.5"></lucide-icon>
+                Remove
+              </button>
+            </li>
+            <li *ngIf="!shares.length" class="px-4 py-10 text-center text-sm text-slate-500">
+              No shares on this folder yet.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Document sharing (management) -->
+  <div
+    *ngIf="documentShareModalOpen && isMgmt && selectedDocForShares"
+    class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="doc-share-modal-title"
+    (click)="closeDocumentShareModal()"
+  >
+    <div
+      class="dm-modal-surface flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="shrink-0 border-b border-slate-100/90 bg-gradient-to-r from-slate-50/80 to-portal-50/30 px-6 py-4">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-portal-600">Document</p>
+            <h2 id="doc-share-modal-title" class="mt-1 text-base font-extrabold tracking-tight text-slate-900">
+              Share file
+            </h2>
+            <p class="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-600">
+              <span class="font-semibold text-slate-800">{{ selectedDocForShares.originalFileName }}</span>
+              — access to this file only (not the whole folder).
+            </p>
+          </div>
+          <button
+            type="button"
+            (click)="closeDocumentShareModal()"
+            class="dm-modal-close shrink-0 rounded-xl p-2 hover:bg-white/80"
+            aria-label="Close"
+          >
+            <lucide-icon name="x" [size]="20" [strokeWidth]="1.5"></lucide-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+        <div
+          class="rounded-xl border border-slate-100 bg-gradient-to-br from-slate-50/90 to-portal-50/25 px-3 py-2.5 text-xs leading-relaxed text-slate-600 transition-shadow duration-300 motion-safe:hover:shadow-sm"
+        >
+          Grant access by <strong class="text-slate-800">role</strong>, <strong class="text-slate-800">location</strong>, or
+          <strong class="text-slate-800">specific users</strong>.
+        </div>
+
+        <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="sm:col-span-2 sm:max-w-xs">
+            <label class="block text-sm font-semibold text-slate-700" for="docShareTypeModal">Share with</label>
+            <select
+              id="docShareTypeModal"
+              [(ngModel)]="shareType"
+              (ngModelChange)="onShareTypeChange($event)"
+              name="docShareTypeModal"
+              class="field-input mt-1 bg-white"
+            >
+              <option [ngValue]="1">Role</option>
+              <option [ngValue]="2">Location</option>
+              <option [ngValue]="3">User</option>
+            </select>
+          </div>
+
+          <div *ngIf="shareType === 1" class="sm:col-span-2">
+            <ng-container *ngTemplateOutlet="shareRolePicker"></ng-container>
+          </div>
+          <div *ngIf="shareType === 2" class="sm:col-span-2">
+            <ng-container *ngTemplateOutlet="shareLocationPicker"></ng-container>
+          </div>
+          <div *ngIf="shareType === 3" class="sm:col-span-2">
+            <ng-container *ngTemplateOutlet="shareUserPicker"></ng-container>
+          </div>
+
+          <div class="flex justify-end sm:col-span-2">
+            <button type="button" (click)="addDocumentShare()" class="btn-primary min-w-[10rem] gap-2 py-2.5 text-sm font-semibold">
+              <lucide-icon name="user-plus" class="shrink-0 text-white" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+              Add access
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-8">
+          <p class="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-500">Who has access</p>
+          <ul class="divide-y divide-slate-100/90 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50/50">
+            <li
+              *ngFor="let s of documentShares"
+              class="flex items-center justify-between gap-3 px-4 py-3 transition-all duration-200 hover:bg-white/90 motion-safe:hover:translate-x-0.5"
+            >
+              <span class="min-w-0 text-sm text-slate-700">
+                <span *ngIf="s.shareType === 1"><span class="text-slate-500">Role</span> · {{ s.roleName }}</span>
+                <span *ngIf="s.shareType === 2">
+                  <span class="text-slate-500">Location</span> ·
+                  <ng-container *ngIf="s.locationName; else inactiveLocShare">{{ s.locationName }}</ng-container>
+                  <ng-template #inactiveLocShare><span class="text-slate-400">(inactive)</span></ng-template>
+                </span>
+                <span *ngIf="s.shareType === 3"><span class="text-slate-500">User</span> · {{ s.userEmail || s.userId }}</span>
+              </span>
+              <button
+                type="button"
+                (click)="removeDocumentShare(s)"
+                class="inline-flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold text-red-700 transition-all duration-200 hover:bg-red-50 motion-safe:hover:scale-105 active:scale-95"
+              >
+                <lucide-icon name="trash-2" class="shrink-0 text-red-700" [size]="14" [strokeWidth]="1.5"></lucide-icon>
+                Remove
+              </button>
+            </li>
+            <li *ngIf="!documentShares.length" class="px-4 py-10 text-center text-sm text-slate-500">
+              No shares on this file yet.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="pdfViewerOpen"
+    class="fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="pdfPreviewTitle"
+  >
+    <div
+      class="dm-modal-surface flex h-[90vh] w-full max-w-7xl flex-col overflow-hidden rounded-3xl border border-slate-100 bg-white"
+      (click)="$event.stopPropagation()"
+    >
+      <div
+        class="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3"
+      >
+        <h3 class="truncate text-sm font-semibold text-slate-900">
+          {{ pdfPreviewTitle }}
+        </h3>
+        <button
+          type="button"
+          (click)="closePdfViewer()"
+          class="group inline-flex shrink-0 items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 motion-safe:hover:-translate-y-0.5 motion-safe:hover:shadow-sm active:scale-[0.98]"
+        >
+          <lucide-icon
+            name="x"
+            class="shrink-0 text-slate-600 transition-transform duration-200 motion-safe:group-hover:rotate-90"
+            [size]="16"
+            [strokeWidth]="1.5"
+          ></lucide-icon>
+          Close
+        </button>
+      </div>
+      <div class="relative flex min-h-0 flex-1 flex-col bg-slate-100">
+        <div
+          *ngIf="pdfPreviewLoading"
+          class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-slate-100/85 backdrop-blur-sm"
+        >
+          <div
+            class="h-10 w-10 animate-spin rounded-full border-2 border-portal-200 border-t-portal-500"
+            aria-hidden="true"
+          ></div>
+          <p class="text-sm font-medium text-slate-600">Loading preview…</p>
+        </div>
+        <iframe
+          *ngIf="pdfPreviewUrl"
+          [src]="pdfPreviewUrl"
+          class="min-h-0 w-full flex-1 border-0"
+          title="Document preview"
+        ></iframe>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #shareRolePicker>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <label class="text-sm font-semibold text-slate-700">Roles</label>
+      <div class="flex items-center gap-2">
+        <span *ngIf="selectedShareRoleIds.length" class="rounded-full bg-portal-100 px-2 py-0.5 text-[11px] font-bold text-portal-900">
+          {{ selectedShareRoleIds.length }} selected
+        </span>
+        <button
+          *ngIf="selectedShareRoleIds.length"
+          type="button"
+          (click)="clearShareRolePickerSelection()"
+          class="inline-flex items-center gap-1 text-xs font-semibold text-portal-700 underline decoration-portal-300 underline-offset-2 hover:text-portal-900"
+        >
+          <lucide-icon name="x" class="shrink-0 text-portal-700" [size]="14" [strokeWidth]="1.5"></lucide-icon>
+          Clear
+        </button>
+      </div>
+    </div>
+    <p
+      *ngIf="!roles.length"
+      class="mt-2 rounded-xl border border-amber-100 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950"
+    >
+      No roles are configured. Add roles under <strong>Settings</strong> first.
+    </p>
+    <div *ngIf="roles.length" class="mt-2 space-y-2">
+      <div class="relative">
+        <input
+          [(ngModel)]="shareRolePickFilter"
+          name="shareRolePickFilter"
+          type="search"
+          autocomplete="off"
+          placeholder="Search roles…"
+          class="field-input-search w-full bg-white pl-3 pr-9"
+        />
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true">
+          <lucide-icon name="search" class="text-slate-400" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+        </span>
+      </div>
+      <div
+        class="max-h-52 overflow-y-auto rounded-xl border border-slate-200/90 bg-slate-50/40 p-2 shadow-inner ring-1 ring-slate-900/[0.04]"
+        role="group"
+        aria-label="Roles"
+      >
+        <ul class="space-y-1">
+          <li *ngFor="let r of filteredShareRoles">
+            <label
+              class="flex cursor-pointer items-start gap-3 rounded-xl border px-2.5 py-2.5 transition-all duration-200 motion-safe:hover:shadow-sm"
+              [ngClass]="
+                isShareRoleSelected(r.id)
+                  ? 'border-portal-400 bg-white shadow-sm ring-1 ring-portal-200/60'
+                  : 'border-transparent bg-white/60 hover:border-portal-200 hover:bg-white'
+              "
+            >
+              <input
+                type="checkbox"
+                class="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-portal-600 focus:ring-portal-500"
+                [checked]="isShareRoleSelected(r.id)"
+                (change)="toggleShareRoleSelection(r.id)"
+              />
+              <span class="min-w-0 flex-1 text-left text-sm font-medium text-slate-900">{{ r.name }}</span>
+            </label>
+          </li>
+        </ul>
+        <p *ngIf="!filteredShareRoles.length" class="px-2 py-8 text-center text-xs text-slate-500">No roles match your search.</p>
+      </div>
+      <p class="text-[11px] leading-relaxed text-slate-500">Select one or more roles. Everyone in those roles receives access when you add the share.</p>
+    </div>
+  </ng-template>
+
+  <ng-template #shareLocationPicker>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <label class="text-sm font-semibold text-slate-700">Locations</label>
+      <div class="flex items-center gap-2">
+        <span *ngIf="selectedShareLocationIds.length" class="rounded-full bg-portal-100 px-2 py-0.5 text-[11px] font-bold text-portal-900">
+          {{ selectedShareLocationIds.length }} selected
+        </span>
+        <button
+          *ngIf="selectedShareLocationIds.length"
+          type="button"
+          (click)="clearShareLocationPickerSelection()"
+          class="inline-flex items-center gap-1 text-xs font-semibold text-portal-700 underline decoration-portal-300 underline-offset-2 hover:text-portal-900"
+        >
+          <lucide-icon name="x" class="shrink-0 text-portal-700" [size]="14" [strokeWidth]="1.5"></lucide-icon>
+          Clear
+        </button>
+      </div>
+    </div>
+    <p
+      *ngIf="!locations.length"
+      class="mt-2 rounded-xl border border-amber-100 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950"
+    >
+      No locations are configured. Add locations under <strong>Settings</strong> first.
+    </p>
+    <div *ngIf="locations.length" class="mt-2 space-y-2">
+      <div class="relative">
+        <input
+          [(ngModel)]="shareLocationPickFilter"
+          name="shareLocationPickFilter"
+          type="search"
+          autocomplete="off"
+          placeholder="Search by name…"
+          class="field-input-search w-full bg-white pl-3 pr-9"
+        />
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true">
+          <lucide-icon name="search" class="text-slate-400" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+        </span>
+      </div>
+      <div
+        class="max-h-52 overflow-y-auto rounded-xl border border-slate-200/90 bg-slate-50/40 p-2 shadow-inner ring-1 ring-slate-900/[0.04]"
+        role="group"
+        aria-label="Locations"
+      >
+        <ul class="space-y-1">
+          <li *ngFor="let l of filteredShareLocations">
+            <label
+              class="flex cursor-pointer items-start gap-3 rounded-xl border px-2.5 py-2.5 transition-all duration-200 motion-safe:hover:shadow-sm"
+              [ngClass]="
+                isShareLocationSelected(l.id)
+                  ? 'border-portal-400 bg-white shadow-sm ring-1 ring-portal-200/60'
+                  : 'border-transparent bg-white/60 hover:border-portal-200 hover:bg-white'
+              "
+            >
+              <input
+                type="checkbox"
+                class="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-portal-600 focus:ring-portal-500"
+                [checked]="isShareLocationSelected(l.id)"
+                (change)="toggleShareLocationSelection(l.id)"
+              />
+              <span class="min-w-0 flex-1 text-left">
+                <span class="block text-sm font-medium text-slate-900">{{ l.name }}</span>
+              </span>
+            </label>
+          </li>
+        </ul>
+        <p *ngIf="!filteredShareLocations.length" class="px-2 py-8 text-center text-xs text-slate-500">No locations match your search.</p>
+      </div>
+      <p class="text-[11px] leading-relaxed text-slate-500">Select one or more locations. Staff at those sites receive access when you add the share.</p>
+    </div>
+  </ng-template>
+
+  <ng-template #shareUserPicker>
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <label class="text-sm font-semibold text-slate-700">Users</label>
+      <div class="flex items-center gap-2">
+        <span *ngIf="selectedShareUserIds.length" class="rounded-full bg-portal-100 px-2 py-0.5 text-[11px] font-bold text-portal-900">
+          {{ selectedShareUserIds.length }} selected
+        </span>
+        <button
+          *ngIf="selectedShareUserIds.length"
+          type="button"
+          (click)="clearShareUserPickerSelection()"
+          class="inline-flex items-center gap-1 text-xs font-semibold text-portal-700 underline decoration-portal-300 underline-offset-2 hover:text-portal-900"
+        >
+          <lucide-icon name="x" class="shrink-0 text-portal-700" [size]="14" [strokeWidth]="1.5"></lucide-icon>
+          Clear
+        </button>
+      </div>
+    </div>
+    <p
+      *ngIf="!shareEligibleUsers.length"
+      class="mt-2 rounded-xl border border-amber-100 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-950"
+    >
+      No approved users are available yet. Approve accounts under <strong>Approvals</strong> or <strong>Users</strong> first.
+    </p>
+    <div *ngIf="shareEligibleUsers.length" class="mt-2 space-y-2">
+      <div class="relative">
+        <input
+          [(ngModel)]="shareUserPickFilter"
+          name="shareUserPickFilter"
+          type="search"
+          autocomplete="off"
+          placeholder="Search by name or email…"
+          class="field-input-search w-full bg-white pl-3 pr-9"
+        />
+        <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true">
+          <lucide-icon name="search" class="text-slate-400" [size]="16" [strokeWidth]="1.5"></lucide-icon>
+        </span>
+      </div>
+      <div
+        class="max-h-52 overflow-y-auto rounded-xl border border-slate-200/90 bg-slate-50/40 p-2 shadow-inner ring-1 ring-slate-900/[0.04]"
+        role="group"
+        aria-label="Eligible users"
+      >
+        <ul class="space-y-1">
+          <li *ngFor="let u of filteredShareEligibleUsers">
+            <label
+              class="flex cursor-pointer items-start gap-3 rounded-xl border px-2.5 py-2.5 transition-all duration-200 motion-safe:hover:shadow-sm"
+              [ngClass]="
+                isShareUserSelected(u.id)
+                  ? 'border-portal-400 bg-white shadow-sm ring-1 ring-portal-200/60'
+                  : 'border-transparent bg-white/60 hover:border-portal-200 hover:bg-white'
+              "
+            >
+              <input
+                type="checkbox"
+                class="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 text-portal-600 focus:ring-portal-500"
+                [checked]="isShareUserSelected(u.id)"
+                (change)="toggleShareUserSelection(u.id)"
+              />
+              <span class="min-w-0 flex-1 text-left">
+                <span class="block text-sm font-medium text-slate-900">{{ shareUserDisplayName(u) }}</span>
+                <span *ngIf="shareUserShowEmailSubline(u)" class="mt-0.5 block text-xs text-slate-500">{{ u.email }}</span>
+              </span>
+            </label>
+          </li>
+        </ul>
+        <p *ngIf="!filteredShareEligibleUsers.length" class="px-2 py-8 text-center text-xs text-slate-500">
+          No users match your search.
+        </p>
+      </div>
+      <p class="text-[11px] leading-relaxed text-slate-500">
+        Choose one or more approved people. Selected users receive access when you add the share.
+      </p>
+    </div>
+  </ng-template>
+
+  <app-loader [type]="'full'" [active]="blockingLoading"></app-loader>
+</div>

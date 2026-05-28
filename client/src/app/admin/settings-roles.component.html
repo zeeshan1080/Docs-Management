@@ -1,0 +1,154 @@
+<div class="min-w-0 space-y-8">
+  <div class="app-panel">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <h2 class="text-lg font-extrabold tracking-tight text-slate-900">Roles</h2>
+        <p class="mt-1 text-sm leading-relaxed text-slate-600">
+          Roles appear when people register, when you share folders or files, and when you assign access to users.
+        </p>
+      </div>
+      <button type="button" (click)="openAddModal()" class="btn-primary px-5 py-2.5">
+        Add role
+      </button>
+    </div>
+  </div>
+
+  <div
+    *ngIf="addModalOpen"
+    class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="dm-modal-surface w-full max-w-lg rounded-2xl border border-white/70 bg-white p-6" (click)="$event.stopPropagation()">
+      <div class="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Add role</h3>
+          <p class="mt-1 text-xs text-slate-500">Example: Front Desk, Regional Manager.</p>
+        </div>
+        <button type="button" (click)="closeAddModal()" [disabled]="saving" class="dm-modal-close p-1.5 text-base leading-none" aria-label="Close">✕</button>
+      </div>
+      <form class="space-y-4" (ngSubmit)="submit()">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700">
+            Role name <span class="text-red-600" aria-hidden="true">*</span>
+          </label>
+          <input
+            [(ngModel)]="name"
+            name="roleName"
+            class="field-input"
+            type="text"
+            placeholder="Regional Manager"
+            required
+            autocomplete="off"
+          />
+        </div>
+        <div class="space-y-2">
+          <p *ngIf="error" class="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</p>
+          <p *ngIf="success" class="rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{{ success }}</p>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" (click)="closeAddModal()" [disabled]="saving" class="btn-secondary px-5 py-2.5">Cancel</button>
+          <button type="submit" [disabled]="saving" class="btn-primary px-6 py-2.5">
+            {{ saving ? 'Saving…' : 'Add role' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div
+    *ngIf="editModalOpen && editingRole"
+    class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="dm-modal-surface w-full max-w-lg rounded-2xl border border-white/70 bg-white p-6" (click)="$event.stopPropagation()">
+      <div class="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Edit role</h3>
+          <p class="mt-1 text-xs text-slate-500">Change how this role appears in lists and pickers.</p>
+        </div>
+        <button type="button" (click)="closeEditModal()" [disabled]="saving" class="dm-modal-close p-1.5 text-base leading-none" aria-label="Close">✕</button>
+      </div>
+      <form class="space-y-4" (ngSubmit)="submitEdit()">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700">
+            Role name <span class="text-red-600" aria-hidden="true">*</span>
+          </label>
+          <input
+            [(ngModel)]="editName"
+            name="editRoleName"
+            class="field-input"
+            type="text"
+            required
+            autocomplete="off"
+            maxlength="256"
+          />
+        </div>
+        <div class="space-y-2">
+          <p *ngIf="error" class="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</p>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" (click)="closeEditModal()" [disabled]="saving" class="btn-secondary px-5 py-2.5">Cancel</button>
+          <button type="submit" [disabled]="saving" class="btn-primary px-6 py-2.5">
+            {{ saving ? 'Saving…' : 'Save' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="app-panel-tight overflow-hidden">
+    <div class="border-b border-slate-100/90 bg-gradient-to-r from-slate-50/80 to-portal-50/30 px-6 py-4">
+      <h2 class="text-lg font-extrabold tracking-tight text-slate-900">All roles</h2>
+      <p class="mt-0.5 text-xs text-slate-500">Users and shares reference roles by id, so renaming updates the label everywhere.</p>
+      <p *ngIf="success" class="mt-3 rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{{ success }}</p>
+    </div>
+    <div class="overflow-x-auto">
+      <app-error-state
+        *ngIf="!loading && error"
+        [message]="error"
+        [type]="'server'"
+        (retry)="retryLoad()"
+      ></app-error-state>
+      <div *ngIf="loading" class="px-6 py-8">
+        <div class="space-y-2">
+          <div *ngFor="let s of [1,2,3,4,5]" class="h-8 animate-pulse rounded bg-slate-200"></div>
+        </div>
+      </div>
+      <table class="min-w-full divide-y divide-slate-200/90 text-sm">
+        <thead class="app-table-head">
+          <tr>
+            <th class="px-6 py-3.5">Name</th>
+            <th class="px-6 py-3.5 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 bg-white/80">
+          <tr *ngFor="let r of roles" class="transition hover:bg-portal-50/30">
+            <td class="px-6 py-3.5 font-semibold text-slate-900">{{ r.name }}</td>
+            <td class="px-6 py-3.5 text-right">
+              <button
+                *ngIf="!isManagementRole(r)"
+                type="button"
+                (click)="openEditModal(r)"
+                class="text-sm font-semibold text-portal-700 hover:text-portal-900"
+              >
+                Edit
+              </button>
+              <span *ngIf="isManagementRole(r)" class="text-xs text-slate-400" title="This system role cannot be renamed.">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <app-empty-state
+        *ngIf="!loading && !error && !roles.length"
+        [title]="'No roles yet'"
+        [description]="'Create your first role for registration and sharing permissions.'"
+        [actionLabel]="'Add role'"
+        (action)="openAddModal()"
+      ></app-empty-state>
+    </div>
+  </div>
+
+  <app-loader [type]="'full'" [active]="blockingLoading"></app-loader>
+</div>

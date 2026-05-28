@@ -1,0 +1,160 @@
+<div class="min-w-0 space-y-8">
+  <div class="app-panel">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <h2 class="text-lg font-extrabold tracking-tight text-slate-900">Locations</h2>
+        <p class="mt-1 text-sm leading-relaxed text-slate-600">
+          Locations are identified by display name for registration and folder sharing.
+        </p>
+      </div>
+      <button type="button" (click)="openAddModal()" class="btn-primary px-5 py-2.5">
+        Add location
+      </button>
+    </div>
+  </div>
+
+  <div
+    *ngIf="addModalOpen"
+    class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="dm-modal-surface w-full max-w-xl rounded-2xl border border-white/70 bg-white p-6" (click)="$event.stopPropagation()">
+      <div class="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Add location</h3>
+          <p class="mt-1 text-xs text-slate-500">Create a new registration/share location.</p>
+        </div>
+        <button type="button" (click)="closeAddModal()" class="dm-modal-close p-1.5 text-base leading-none" aria-label="Close">✕</button>
+      </div>
+      <form class="grid gap-4" (ngSubmit)="submit()">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700">
+            Display name <span class="text-red-600" aria-hidden="true">*</span>
+          </label>
+          <input
+            [(ngModel)]="name"
+            name="locName"
+            class="field-input"
+            type="text"
+            placeholder="Glen Mills"
+            required
+            autocomplete="off"
+          />
+        </div>
+        <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+          <input type="checkbox" [(ngModel)]="addInactive" name="addInactive" class="rounded border-slate-300 text-portal-600 focus:ring-portal-500" />
+          <span>Inactive <span class="text-xs font-normal text-slate-500">(hidden from registration and location shares)</span></span>
+        </label>
+        <div class="space-y-2">
+          <p *ngIf="error" class="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</p>
+          <p *ngIf="success" class="rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{{ success }}</p>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" (click)="closeAddModal()" [disabled]="saving" class="btn-secondary px-5 py-2.5">Cancel</button>
+          <button type="submit" [disabled]="saving" class="btn-primary px-6 py-2.5">
+            {{ saving ? 'Saving…' : 'Add location' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div
+    *ngIf="editModalOpen && editingLocation"
+    class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/55 p-4 backdrop-blur-sm motion-safe:animate-fade-in"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="dm-modal-surface w-full max-w-xl rounded-2xl border border-white/70 bg-white p-6" (click)="$event.stopPropagation()">
+      <div class="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h3 class="text-base font-extrabold text-slate-900">Edit location</h3>
+          <p class="mt-1 text-xs text-slate-500">Update the display name or active status.</p>
+        </div>
+        <button type="button" (click)="closeEditModal()" class="dm-modal-close p-1.5 text-base leading-none" aria-label="Close">✕</button>
+      </div>
+      <form class="grid gap-4" (ngSubmit)="submitEdit()">
+        <div>
+          <label class="block text-sm font-semibold text-slate-700">
+            Display name <span class="text-red-600" aria-hidden="true">*</span>
+          </label>
+          <input
+            [(ngModel)]="editName"
+            name="editLocName"
+            class="field-input"
+            type="text"
+            required
+            autocomplete="off"
+          />
+        </div>
+        <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-700">
+          <input type="checkbox" [(ngModel)]="editInactive" name="editInactive" class="rounded border-slate-300 text-portal-600 focus:ring-portal-500" />
+          <span>Inactive <span class="text-xs font-normal text-slate-500">(sets record status inactive)</span></span>
+        </label>
+        <div class="space-y-2">
+          <p *ngIf="error" class="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">{{ error }}</p>
+          <p *ngIf="success" class="rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{{ success }}</p>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" (click)="closeEditModal()" [disabled]="saving" class="btn-secondary px-5 py-2.5">Cancel</button>
+          <button type="submit" [disabled]="saving" class="btn-primary px-6 py-2.5">
+            {{ saving ? 'Saving…' : 'Save changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="app-panel-tight overflow-hidden">
+    <div class="border-b border-slate-100/90 bg-gradient-to-r from-slate-50/80 to-portal-50/30 px-6 py-4">
+      <h2 class="text-lg font-extrabold tracking-tight text-slate-900">All locations</h2>
+      <p class="mt-0.5 text-xs text-slate-500">Locations available for registration and folder sharing.</p>
+    </div>
+    <div class="overflow-x-auto">
+      <app-error-state
+        *ngIf="!loading && error"
+        [message]="error"
+        [type]="'server'"
+        (retry)="retryLoad()"
+      ></app-error-state>
+      <div *ngIf="loading" class="px-6 py-8">
+        <div class="space-y-2">
+          <div *ngFor="let s of [1,2,3,4,5]" class="h-8 animate-pulse rounded bg-slate-200"></div>
+        </div>
+      </div>
+      <table class="min-w-full divide-y divide-slate-200/90 text-sm">
+        <thead class="app-table-head">
+          <tr>
+            <th class="px-6 py-3.5">Name</th>
+            <th class="px-6 py-3.5">Status</th>
+            <th class="px-6 py-3.5 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 bg-white/80">
+          <tr *ngFor="let l of locations" class="transition hover:bg-portal-50/30" [class.opacity-60]="l.inactive">
+            <td class="px-6 py-3.5 font-semibold text-slate-900">{{ l.name }}</td>
+            <td class="px-6 py-3.5">
+              <span *ngIf="l.inactive" class="rounded-md bg-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-700">Inactive</span>
+              <span *ngIf="!l.inactive" class="rounded-md bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-900">Active</span>
+            </td>
+            <td class="px-6 py-3.5 text-right">
+              <button type="button" (click)="openEditModal(l)" class="text-sm font-semibold text-portal-700 hover:text-portal-900">
+                Edit
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <app-empty-state
+        *ngIf="!loading && !error && !locations.length"
+        [title]="'No locations yet'"
+        [description]="'Create your first location to enable registration and sharing by location.'"
+        [actionLabel]="'Add location'"
+        (action)="openAddModal()"
+      ></app-empty-state>
+    </div>
+  </div>
+
+  <app-loader [type]="'full'" [active]="blockingLoading"></app-loader>
+</div>

@@ -1,0 +1,207 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Projects\\PrimeDocs\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{31FFABBD-EA4B-4980-96F8-D178219F69AC}|src\\DocumentManagement.Api\\DocumentManagement.Api.csproj|d:\\projects\\primedocs\\src\\documentmanagement.api\\controllers\\documentsharescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{31FFABBD-EA4B-4980-96F8-D178219F69AC}|src\\DocumentManagement.Api\\DocumentManagement.Api.csproj|solutionrelative:src\\documentmanagement.api\\controllers\\documentsharescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B8FC659D-4580-42B3-9C82-E7C7755C0D60}|src\\DocumentManagement.Domain\\DocumentManagement.Domain.csproj|d:\\projects\\primedocs\\src\\documentmanagement.domain\\approvalstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B8FC659D-4580-42B3-9C82-E7C7755C0D60}|src\\DocumentManagement.Domain\\DocumentManagement.Domain.csproj|solutionrelative:src\\documentmanagement.domain\\approvalstatus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{178D5279-998E-475D-BB53-A9E14AD4F56F}|src\\DocumentManagement.Infrastructure\\DocumentManagement.Infrastructure.csproj|d:\\projects\\primedocs\\src\\documentmanagement.infrastructure\\devseedhostedservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{178D5279-998E-475D-BB53-A9E14AD4F56F}|src\\DocumentManagement.Infrastructure\\DocumentManagement.Infrastructure.csproj|solutionrelative:src\\documentmanagement.infrastructure\\devseedhostedservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{178D5279-998E-475D-BB53-A9E14AD4F56F}|src\\DocumentManagement.Infrastructure\\DocumentManagement.Infrastructure.csproj|d:\\projects\\primedocs\\src\\documentmanagement.infrastructure\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{178D5279-998E-475D-BB53-A9E14AD4F56F}|src\\DocumentManagement.Infrastructure\\DocumentManagement.Infrastructure.csproj|solutionrelative:src\\documentmanagement.infrastructure\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{93CE8CDF-5C31-4D0D-82CF-92F7828637B5}|src\\DocumentManagement.Application\\DocumentManagement.Application.csproj|d:\\projects\\primedocs\\src\\documentmanagement.application\\sharing\\createfoldersharerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{93CE8CDF-5C31-4D0D-82CF-92F7828637B5}|src\\DocumentManagement.Application\\DocumentManagement.Application.csproj|solutionrelative:src\\documentmanagement.application\\sharing\\createfoldersharerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{93CE8CDF-5C31-4D0D-82CF-92F7828637B5}|src\\DocumentManagement.Application\\DocumentManagement.Application.csproj|d:\\projects\\primedocs\\src\\documentmanagement.application\\documents\\chunkuploaddtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{93CE8CDF-5C31-4D0D-82CF-92F7828637B5}|src\\DocumentManagement.Application\\DocumentManagement.Application.csproj|solutionrelative:src\\documentmanagement.application\\documents\\chunkuploaddtos.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{93CE8CDF-5C31-4D0D-82CF-92F7828637B5}|src\\DocumentManagement.Application\\DocumentManagement.Application.csproj|d:\\projects\\primedocs\\src\\documentmanagement.application\\documentmanagement.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{93CE8CDF-5C31-4D0D-82CF-92F7828637B5}|src\\DocumentManagement.Application\\DocumentManagement.Application.csproj|solutionrelative:src\\documentmanagement.application\\documentmanagement.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{31FFABBD-EA4B-4980-96F8-D178219F69AC}|src\\DocumentManagement.Api\\DocumentManagement.Api.csproj|d:\\projects\\primedocs\\src\\documentmanagement.api\\controllers\\folderscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{31FFABBD-EA4B-4980-96F8-D178219F69AC}|src\\DocumentManagement.Api\\DocumentManagement.Api.csproj|solutionrelative:src\\documentmanagement.api\\controllers\\folderscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{31FFABBD-EA4B-4980-96F8-D178219F69AC}|src\\DocumentManagement.Api\\DocumentManagement.Api.csproj|d:\\projects\\primedocs\\src\\documentmanagement.api\\controllers\\foldersharescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{31FFABBD-EA4B-4980-96F8-D178219F69AC}|src\\DocumentManagement.Api\\DocumentManagement.Api.csproj|solutionrelative:src\\documentmanagement.api\\controllers\\foldersharescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{31FFABBD-EA4B-4980-96F8-D178219F69AC}|src\\DocumentManagement.Api\\DocumentManagement.Api.csproj|d:\\projects\\primedocs\\src\\documentmanagement.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{31FFABBD-EA4B-4980-96F8-D178219F69AC}|src\\DocumentManagement.Api\\DocumentManagement.Api.csproj|solutionrelative:src\\documentmanagement.api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{31FFABBD-EA4B-4980-96F8-D178219F69AC}|src\\DocumentManagement.Api\\DocumentManagement.Api.csproj|d:\\projects\\primedocs\\src\\documentmanagement.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{31FFABBD-EA4B-4980-96F8-D178219F69AC}|src\\DocumentManagement.Api\\DocumentManagement.Api.csproj|solutionrelative:src\\documentmanagement.api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "DocumentSharesController.cs",
+              "DocumentMoniker": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Api\\Controllers\\DocumentSharesController.cs",
+              "RelativeDocumentMoniker": "src\\DocumentManagement.Api\\Controllers\\DocumentSharesController.cs",
+              "ToolTip": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Api\\Controllers\\DocumentSharesController.cs",
+              "RelativeToolTip": "src\\DocumentManagement.Api\\Controllers\\DocumentSharesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAC4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-15T16:58:52.817Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ApprovalStatus.cs",
+              "DocumentMoniker": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Domain\\ApprovalStatus.cs",
+              "RelativeDocumentMoniker": "src\\DocumentManagement.Domain\\ApprovalStatus.cs",
+              "ToolTip": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Domain\\ApprovalStatus.cs",
+              "RelativeToolTip": "src\\DocumentManagement.Domain\\ApprovalStatus.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-15T16:58:32.543Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DevSeedHostedService.cs",
+              "DocumentMoniker": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Infrastructure\\DevSeedHostedService.cs",
+              "RelativeDocumentMoniker": "src\\DocumentManagement.Infrastructure\\DevSeedHostedService.cs",
+              "ToolTip": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Infrastructure\\DevSeedHostedService.cs",
+              "RelativeToolTip": "src\\DocumentManagement.Infrastructure\\DevSeedHostedService.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-15T16:58:01.562Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DependencyInjection.cs",
+              "DocumentMoniker": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Infrastructure\\DependencyInjection.cs",
+              "RelativeDocumentMoniker": "src\\DocumentManagement.Infrastructure\\DependencyInjection.cs",
+              "ToolTip": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Infrastructure\\DependencyInjection.cs",
+              "RelativeToolTip": "src\\DocumentManagement.Infrastructure\\DependencyInjection.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-15T16:57:50.474Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CreateFolderShareRequest.cs",
+              "DocumentMoniker": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Application\\Sharing\\CreateFolderShareRequest.cs",
+              "RelativeDocumentMoniker": "src\\DocumentManagement.Application\\Sharing\\CreateFolderShareRequest.cs",
+              "ToolTip": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Application\\Sharing\\CreateFolderShareRequest.cs",
+              "RelativeToolTip": "src\\DocumentManagement.Application\\Sharing\\CreateFolderShareRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-15T16:57:41.325Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ChunkUploadDtos.cs",
+              "DocumentMoniker": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Application\\Documents\\ChunkUploadDtos.cs",
+              "RelativeDocumentMoniker": "src\\DocumentManagement.Application\\Documents\\ChunkUploadDtos.cs",
+              "ToolTip": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Application\\Documents\\ChunkUploadDtos.cs",
+              "RelativeToolTip": "src\\DocumentManagement.Application\\Documents\\ChunkUploadDtos.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-15T16:57:33.414Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "FoldersController.cs",
+              "DocumentMoniker": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Api\\Controllers\\FoldersController.cs",
+              "RelativeDocumentMoniker": "src\\DocumentManagement.Api\\Controllers\\FoldersController.cs",
+              "ToolTip": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Api\\Controllers\\FoldersController.cs",
+              "RelativeToolTip": "src\\DocumentManagement.Api\\Controllers\\FoldersController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-14T07:48:03.585Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "FolderSharesController.cs",
+              "DocumentMoniker": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Api\\Controllers\\FolderSharesController.cs",
+              "RelativeDocumentMoniker": "src\\DocumentManagement.Api\\Controllers\\FolderSharesController.cs",
+              "ToolTip": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Api\\Controllers\\FolderSharesController.cs",
+              "RelativeToolTip": "src\\DocumentManagement.Api\\Controllers\\FolderSharesController.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAABwAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-14T07:46:01.784Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Api\\Program.cs",
+              "RelativeDocumentMoniker": "src\\DocumentManagement.Api\\Program.cs",
+              "ToolTip": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Api\\Program.cs",
+              "RelativeToolTip": "src\\DocumentManagement.Api\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-14T04:25:55.167Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DocumentManagement.Application",
+              "DocumentMoniker": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Application\\DocumentManagement.Application.csproj",
+              "RelativeDocumentMoniker": "src\\DocumentManagement.Application\\DocumentManagement.Application.csproj",
+              "ToolTip": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Application\\DocumentManagement.Application.csproj",
+              "RelativeToolTip": "src\\DocumentManagement.Application\\DocumentManagement.Application.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-05-14T04:25:13.278Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Api\\appsettings.json",
+              "RelativeDocumentMoniker": "src\\DocumentManagement.Api\\appsettings.json",
+              "ToolTip": "D:\\Projects\\PrimeDocs\\src\\DocumentManagement.Api\\appsettings.json",
+              "RelativeToolTip": "src\\DocumentManagement.Api\\appsettings.json",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAACoAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-14T00:51:32.042Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
