@@ -1,0 +1,37 @@
+# ========================
+# .NET
+# ========================
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio
+.vs/
+.vscode/
+
+# ========================
+# Angular / Node
+# ========================
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# ========================
+# Environment / Secrets
+# ========================
+appsettings.Development.json
+appsettings.Production.json
+.env
+
+# ========================
+# OS
+# ========================
+.DS_Store
+Thumbs.db
